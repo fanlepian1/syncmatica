@@ -14,6 +14,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.server.SaveLoader;
 import net.minecraft.world.level.storage.LevelStorage;
+import ch.endte.syncmatica.network.ChannelManager;
 
 @Mixin(MinecraftClient.class)
 public class MixinMinecraftClient

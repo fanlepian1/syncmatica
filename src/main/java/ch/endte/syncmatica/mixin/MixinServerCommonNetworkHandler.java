@@ -1,6 +1,7 @@
 package ch.endte.syncmatica.mixin;
 
 import ch.endte.syncmatica.Reference;
+import ch.endte.syncmatica.network.ChannelManager;
 import ch.endte.syncmatica.network.SyncmaticaPacket;
 import ch.endte.syncmatica.network.handler.ServerPlayHandler;
 import org.spongepowered.asm.mixin.Mixin;
@@ -17,7 +18,7 @@ public class MixinServerCommonNetworkHandler
     @Inject(method = "onCustomPayload", at = @At("HEAD"), cancellable = true)
     private void syncmatica$handlePacket(CustomPayloadC2SPacket packet, CallbackInfo ci)
     {
-        if (packet.payload().getId().id().getNamespace().equals(Reference.MOD_ID))
+        if (packet.payload().getId().id().getNamespace().equals(Reference.MOD_ID)||packet.payload().getId().id().equals(ChannelManager.MINECRAFT_REGISTER))
         {
             SyncmaticaPacket.Payload payload = (SyncmaticaPacket.Payload) packet.payload();
             Object thiss = this;

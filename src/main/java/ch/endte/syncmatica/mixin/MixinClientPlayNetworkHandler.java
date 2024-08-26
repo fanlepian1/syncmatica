@@ -6,6 +6,8 @@ import ch.endte.syncmatica.Reference;
 import ch.endte.syncmatica.Syncmatica;
 import ch.endte.syncmatica.communication.ClientCommunicationManager;
 import ch.endte.syncmatica.communication.ExchangeTarget;
+import ch.endte.syncmatica.network.ChannelManager;
+import ch.endte.syncmatica.network.actor.ActorClientPlayHandler;
 import ch.endte.syncmatica.network.actor.IClientPlay;
 import ch.endte.syncmatica.network.handler.ClientPlayHandler;
 import ch.endte.syncmatica.network.SyncmaticaPacket;
@@ -29,12 +31,15 @@ public abstract class MixinClientPlayNetworkHandler implements IClientPlay
     @Inject(method = "onCustomPayload", at = @At("HEAD"), cancellable = true)
     private void syncmatica$handlePacket(CustomPayload packet, CallbackInfo ci)
     {
-        if (!MinecraftClient.getInstance().isOnThread())
-        {
-            return; //only execute packet on main thread
+        if (packet instanceof SyncmaticaPacket.Payload payload) {
+            ChannelManager.onChannelRegisterHandle(getExchangeTarget(), payload.data().getChannel(), payload.data().getPacket());
+            if (!MinecraftClient.getInstance().isOnThread()) {
+                return; //only execute packet on main thread
+            }
+            ActorClientPlayHandler.getInstance().packetEvent(payload.data().getType(),payload.data().getPacket(),(ClientPlayNetworkHandler) (Object) this,ci);
         }
 
-        if (packet.getId().id().getNamespace().equals(Reference.MOD_ID))
+        if (packet.getId().id().getNamespace().equals(Reference.MOD_ID)||packet.getId().id().equals(ChannelManager.MINECRAFT_REGISTER))
         {
             SyncmaticaPacket.Payload payload = (SyncmaticaPacket.Payload) packet;
             ClientPlayHandler.decodeSyncData(payload.data(), (ClientPlayNetworkHandler) (Object) this);
@@ -44,6 +49,13 @@ public abstract class MixinClientPlayNetworkHandler implements IClientPlay
                 ci.cancel();
 
         }
+    }
+    @Unique
+    private ExchangeTarget getExchangeTarget() {
+        if (exTarget == null) {
+            exTarget = new ExchangeTarget((ClientPlayNetworkHandler) (Object) this);
+        }
+        return exTarget;
     }
 
     @Override
