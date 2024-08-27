@@ -18,7 +18,7 @@ public class MixinServerCommonNetworkHandler
     @Inject(method = "onCustomPayload", at = @At("HEAD"), cancellable = true)
     private void syncmatica$handlePacket(CustomPayloadC2SPacket packet, CallbackInfo ci)
     {
-        if (packet.payload().getId().id().getNamespace().equals(Reference.MOD_ID)||packet.payload().getId().id().equals(ChannelManager.MINECRAFT_REGISTER))
+        if (packet.payload().getId().id().getNamespace().equals(Reference.MOD_ID)||packet.getPacketId().id().equals(ChannelManager.MINECRAFT_REGISTER))
         {
             SyncmaticaPacket.Payload payload = (SyncmaticaPacket.Payload) packet.payload();
             Object thiss = this;

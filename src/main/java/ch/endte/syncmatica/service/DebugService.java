@@ -2,6 +2,7 @@ package ch.endte.syncmatica.service;
 
 import ch.endte.syncmatica.Syncmatica;
 import ch.endte.syncmatica.network.PacketType;
+import net.minecraft.util.Identifier;
 
 public class DebugService extends AbstractService {
 
@@ -17,6 +18,14 @@ public class DebugService extends AbstractService {
             Syncmatica.LOGGER.info(
                     "Sending packet[type={}] to ExchangeTarget[id={}]",
                     packetType.toString(),
+                    targetIdentifier
+            );
+        }
+    }public void logSendPacket(final Identifier id, final String targetIdentifier) {
+        if (doPacketLogging) {
+            Syncmatica.LOGGER.info(
+                    "Sending packet[type={}] to ExchangeTarget[id={}]",
+                    id.toString(),
                     targetIdentifier
             );
         }

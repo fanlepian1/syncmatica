@@ -80,7 +80,8 @@ public abstract class MixinServerPlayNetworkHandler extends ServerCommonNetworkH
     {
         CustomPayload thisPayload = packet.payload();
 
-        if (thisPayload.getId().id().getNamespace().equals(Reference.MOD_ID) || thisPayload.getId().id().equals(ChannelManager.MINECRAFT_REGISTER))
+
+        if (thisPayload.getId().id().getNamespace().equals(Reference.MOD_ID) || thisPayload.getId().id().equals(ChannelManager.MINECRAFT_REGISTER)) if (thisPayload.getId().id().getNamespace().equals(Reference.MOD_ID) || thisPayload.getId().id().equals(ChannelManager.MINECRAFT_REGISTER))
         {
             SyncmaticaPacket.Payload payload = (SyncmaticaPacket.Payload) thisPayload;
             ServerPlayHandler.decodeSyncData(payload.data(), this);

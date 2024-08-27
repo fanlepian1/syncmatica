@@ -8,7 +8,7 @@ public enum PacketType
     // one packet will be responsible for sending the entire metadata of a syncmatic
     // it marks the creation of a syncmatic - for now it also is responsible
     // for changing the syncmatic server and client side
-
+    MINECRAFT_REGISTER("minecraft","register"),
     CANCEL_SHARE("syncmatica","cancel_share"),
     // send to a client when a share failed, 
     // the client can cancel the upload or upon finishing send a removal packet
@@ -77,10 +77,11 @@ public enum PacketType
     MESSAGE("syncmatica","mesage");
     // sends a message from client to server - allows for future compatibility
     // can't fix the typo here lol
-
     public final Identifier identifier;
 
-    PacketType(final String id, final String channel) { identifier = Identifier.of(id, channel); }
+    PacketType(final String id, final String channel) {
+        identifier = Identifier.of(id, channel);
+    }
 
     public static boolean containsIdentifier(final Identifier id) {
         for (final PacketType p : PacketType.values()) {

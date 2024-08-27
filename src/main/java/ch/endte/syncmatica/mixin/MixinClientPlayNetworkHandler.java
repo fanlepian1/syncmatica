@@ -31,13 +31,13 @@ public abstract class MixinClientPlayNetworkHandler implements IClientPlay
     @Inject(method = "onCustomPayload", at = @At("HEAD"), cancellable = true)
     private void syncmatica$handlePacket(CustomPayload packet, CallbackInfo ci)
     {
-        if (packet instanceof SyncmaticaPacket.Payload payload) {
-            ChannelManager.onChannelRegisterHandle(getExchangeTarget(), payload.data().getChannel(), payload.data().getPacket());
+            SyncmaticaPacket.Payload payload1 = (SyncmaticaPacket.Payload) packet;
+            ChannelManager.onChannelRegisterHandle(syncmatica$getExchangeTarget(), payload1.data().getChannel(), payload1.data().getPacket());
             if (!MinecraftClient.getInstance().isOnThread()) {
-                return; //only execute packet on main thread
+                return;
             }
-            ActorClientPlayHandler.getInstance().packetEvent(payload.data().getType(),payload.data().getPacket(),(ClientPlayNetworkHandler) (Object) this,ci);
-        }
+            ActorClientPlayHandler.getInstance().packetEvent(payload1.data().getType(), payload1.data().getPacket(), (ClientPlayNetworkHandler) (Object) this,ci);
+
 
         if (packet.getId().id().getNamespace().equals(Reference.MOD_ID)||packet.getId().id().equals(ChannelManager.MINECRAFT_REGISTER))
         {
@@ -49,13 +49,6 @@ public abstract class MixinClientPlayNetworkHandler implements IClientPlay
                 ci.cancel();
 
         }
-    }
-    @Unique
-    private ExchangeTarget getExchangeTarget() {
-        if (exTarget == null) {
-            exTarget = new ExchangeTarget((ClientPlayNetworkHandler) (Object) this);
-        }
-        return exTarget;
     }
 
     @Override

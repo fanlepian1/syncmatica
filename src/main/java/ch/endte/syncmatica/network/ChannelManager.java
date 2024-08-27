@@ -10,25 +10,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class ChannelManager {
-    public static final Identifier MINECRAFT_REGISTER = Identifier.of(Reference.MOD_ID,"main");
-    public static final Identifier MINECRAFT_UNREGISTER = Identifier.of(Reference.MOD_ID,"main");
+    public static final Identifier MINECRAFT_REGISTER = Identifier.of("minecraft","register");
+    public static final Identifier MINECRAFT_UNREGISTER = Identifier.of("minecraft","unregister");
     private static final Map<ExchangeTarget, List<Identifier>> serverRegisteredChannels = new HashMap<>();
     private static final List<Identifier> clientRegisteredChannels = new ArrayList<>();
-
-    public static void initSendRegister(ExchangeTarget target) {
-        // 构建数据
-        PacketByteBuf byteBuf = new PacketByteBuf(Unpooled.buffer());
-        for (PacketType identifierType : PacketType.values()) {
-            Identifier identifier = identifierType.identifier;
-            byte[] bytes = identifier.toString().getBytes(StandardCharsets.UTF_8);
-            byteBuf.writeBytes(bytes);
-            byteBuf.writeByte(0x00);
-        }
-        // 有数据时才有意义发送
-        if (byteBuf.writerIndex() > 0) {
-            target.sendPacket(PacketType.getType(MINECRAFT_REGISTER), byteBuf, null);
-        }
-    }
 
     private static List<Identifier> onReadRegisterIdentifier(PacketByteBuf data) {
         List<Identifier> identifiers = new ArrayList<>();
@@ -38,7 +23,10 @@ public class ChannelManager {
             if (b == 0x00) {
                 String string = data.toString(start, data.readerIndex() - start - 1, StandardCharsets.UTF_8);
                 string = string.split("/")[0].split("\\\\")[0];
-                identifiers.add(Identifier.of(string,"main"));
+                String string1,string2;
+                string1 = string.split(":")[0];
+                string2 = string.split(":")[1];
+                identifiers.add(Identifier.of(string1,string2));
                 start = data.readerIndex();
             }
         }
@@ -66,7 +54,7 @@ public class ChannelManager {
         }
         // 有数据时才有意义发送
         if (byteBuf2.writerIndex() > 0) {
-            target.sendPacket(PacketType.getType(MINECRAFT_REGISTER), byteBuf2, null);
+            target.sendPacket(MINECRAFT_REGISTER, byteBuf2, null);
         }
     }
 

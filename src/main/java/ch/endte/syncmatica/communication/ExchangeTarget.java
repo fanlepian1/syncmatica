@@ -6,14 +6,18 @@ import java.util.List;
 import ch.endte.syncmatica.Context;
 import ch.endte.syncmatica.Syncmatica;
 import ch.endte.syncmatica.communication.exchange.Exchange;
+import ch.endte.syncmatica.network.SyncmaticaPayload;
 import ch.endte.syncmatica.network.handler.ClientPlayHandler;
 import ch.endte.syncmatica.network.handler.ServerPlayHandler;
 import ch.endte.syncmatica.network.PacketType;
 import ch.endte.syncmatica.network.SyncmaticaPacket;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.packet.c2s.common.CustomPayloadC2SPacket;
+import net.minecraft.network.packet.s2c.common.CustomPayloadS2CPacket;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import fi.dy.masa.malilib.util.StringUtils;
+import net.minecraft.util.Identifier;
 
 // since Client/Server PlayNetworkHandler are 2 different classes, but I want to use exchanges
 // on both without having to recode them individually, I have an adapter class here
@@ -44,7 +48,21 @@ public class ExchangeTarget
     // this class handles the sending of either S2C or C2S packets
     /**
      * The Fabric API call mode sometimes fails here, because the channels might not be registered in PLAY mode, especially for Single Player.
+     *
      */
+    public void sendPacket(final Identifier id, final PacketByteBuf packetBuf, final Context context) {
+        if (context != null) {
+            context.getDebugService().logSendPacket(id, persistentName);
+        }
+        if (clientPlayNetworkHandler != null) {
+            CustomPayloadC2SPacket packet = new CustomPayloadC2SPacket(new SyncmaticaPayload(id, packetBuf));
+            clientPlayNetworkHandler.sendPacket(packet);
+        }
+        if (serverPlayNetworkHandler != null) {
+            CustomPayloadS2CPacket packet = new CustomPayloadS2CPacket(new SyncmaticaPayload(id, packetBuf));
+            serverPlayNetworkHandler.sendPacket(packet);
+        }
+    }
     public void sendPacket(final PacketType type, final PacketByteBuf byteBuf, final Context context)
     {
         //SyncLog.debug("ExchangeTarget#sendPacket(): invoked.");

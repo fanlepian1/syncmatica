@@ -15,10 +15,10 @@ import net.minecraft.network.packet.s2c.common.CustomPayloadS2CPacket;
 @Mixin(ClientCommonNetworkHandler.class)
 public class MixinClientCommonNetworkHandler
 {
-    @Inject(method = "onCustomPayload(Lnet/minecraft/network/packet/s2c/common/CustomPayloadS2CPacket;)V", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "onCustomPayload", at = @At("HEAD"), cancellable = true)
     private void syncmatica$handlePacket(CustomPayloadS2CPacket packet, CallbackInfo ci)
     {
-        if (packet.payload().getId().id().getNamespace().equals(Reference.MOD_ID)||packet.payload().getId().id().equals(ChannelManager.MINECRAFT_REGISTER))
+        if (packet.payload().getId().id().getNamespace().equals(Reference.MOD_ID)||packet.getPacketId().id().equals(ChannelManager.MINECRAFT_REGISTER))
         {
             SyncmaticaPacket.Payload payload = (SyncmaticaPacket.Payload) packet.payload();
             Object thiss = this;
